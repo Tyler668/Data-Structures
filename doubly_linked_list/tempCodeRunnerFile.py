@@ -1,17 +1,7 @@
-import unittest
-from doubly_linked_list import ListNode
-from doubly_linked_list import DoublyLinkedList
-
-
-class DoublyLinkedListTests(unittest.TestCase):
-    def setUp(self):
-        self.node = ListNode(1)
-        self.dll = DoublyLinkedList(self.node)
 
     def test_list_remove_from_tail(self):
         self.dll.remove_from_tail()
         self.assertIsNone(self.dll.head)
-        print('THIS IS THE TAIL: ', self.dll.tail.value)
         self.assertIsNone(self.dll.tail)
         self.assertEqual(len(self.dll), 0)
 
@@ -141,16 +131,3 @@ class DoublyLinkedListTests(unittest.TestCase):
         self.assertEqual(self.dll.head.value, 6)
         self.assertEqual(self.dll.tail.value, 6)
         self.assertEqual(len(self.dll), 1)
-
-    def test_get_max(self):
-        self.assertEqual(self.dll.get_max(), 1)
-        self.dll.add_to_tail(100)
-        self.assertEqual(self.dll.get_max(), 100)
-        self.dll.add_to_tail(55)
-        self.assertEqual(self.dll.get_max(), 100)
-        self.dll.add_to_tail(101)
-        self.assertEqual(self.dll.get_max(), 101)
-
-
-if __name__ == '__main__':
-    unittest.main()
