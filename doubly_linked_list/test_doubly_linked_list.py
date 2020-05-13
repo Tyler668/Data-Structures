@@ -11,7 +11,7 @@ class DoublyLinkedListTests(unittest.TestCase):
     def test_list_remove_from_tail(self):
         self.dll.remove_from_tail()
         self.assertIsNone(self.dll.head)
-        print('THIS IS THE TAIL: ', self.dll.tail.value)
+        # print('THIS IS THE TAIL: ', self.dll.tail.value)
         self.assertIsNone(self.dll.tail)
         self.assertEqual(len(self.dll), 0)
 
