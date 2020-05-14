@@ -10,6 +10,7 @@ This part of the project comprises two days:
    on the BSTNode class.
 """
 
+from collections import deque
 
 class BSTNode:
     def __init__(self, value):
@@ -19,46 +20,24 @@ class BSTNode:
 
     # Insert the given node into the tree
     def insert(self, value):
-        # Initialize a new node with the value parameter
-        node = BSTNode(value)
-
-        # In the case of a duplicate value, place to the right
-        if self.value is node.value:  # (Do we need more logic here to not disrupt the tree?)
-            self.right = node
-
-        # GO RIGHT ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        # Case - new node value is greater than the one we're on:
-        if self.value < node.value:
-            # If the new node value is greater than the one we're on and the self.right is empty, we've found where to place the new node
-            if self.right is None:
-                # Reassign the right node of the point we're on
-                self.right = node
-
-            # if the given node is greater than the point we're on, but less than the point immediately to the right, we can infer it must go to the left of the node to the right
-            elif self.right.value > node.value: 
-                self.right.left = node
-
+        # check if the incoming value is less than the current node's value 
+        if value < self.value:
+            # we know we need to go left 
+            # how do we know when we need to recurse again, 
+            # or when to stop? 
+            if not self.left:
+                # we can park our value here 
+                self.left = BSTNode(value)
             else:
-            # Otherwise if the right point it isn't empty or greater than the node, rerun the function recursively on the point immediately to the right
-                return self.right.insert(value)
-
-        # GO LEFT ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        # Case - new node value is less than the one we're on:
-        elif self.value > node.value:
-            # If the new node value is less than the point we're on and self.left is empty, we've found where to place the new node
-            if self.left is None:
-                # Reassign the left node of the point we're on
-                self.left = node
-
-            # if the given node is less than the point we're on, but greater than the point immediately to the left, we can infer it must go to the right of the node to the left
-            elif self.left.value < node.value: 
-                self.left.right = node
-
+                # we can't park here 
+                # keep searching 
+                self.left.insert(value)
+        else:
+            # we know we need to go right 
+            if not self.right:
+                self.right = BSTNode(value)
             else:
-            # Otherwise if the left point it isn't empty or less than the node, rerun the function recursively from the point immediately to the left
-                return self.left.insert(value)
-
-
+                self.right.insert(value)
 
 
     # Return True if the tree contains the node
@@ -100,55 +79,109 @@ class BSTNode:
         return max.value
 
     # Call the function `fn` on the node of each node
+    # Highly epic recursive DFT for each
+    #------------------------------------------------------
     def for_each(self, fn):
-    # Set current to root of binary tree 
-        current = self  
-        stack = [] # initialize stack 
-        # done = 0 
+        fn(self.value)
+
+        if self.left:
+            self.left.for_each(fn)
         
-        while True: 
-            
-            # Reach the left most Node of the current Node 
-            if current is not None: 
+        if self.right:
+            self.right.for_each(fn)
+    #------------------------------------------------------
+
+    # Iterative depth first traversal
+    # Set current to root of binary tree 
+    def iter_depth_for_each(self, fn):
+        stack = [] 
+
+        # add the root node
+        stack.append(self)
+
+        # loop so long as the stack still has elements 
+        while len(stack) > 0:
+            current = stack.pop()
+            if current.right:
+                stack.append(current.right)
+            if current.left:
+                stack.append(current.left)
+
+            fn(current.value)
+
+
+
+
+        # current = self  
+        # stack = [] # initialize stack         
+        # while True: 
+        #     # Reach the left most Node of the current Node 
+        #     if current is not None: 
                 
-                # Place pointer to a tree node on the stack  
-                # before traversing the node's left subtree 
-                stack.append(current) 
+        #         # Place pointer to a tree node on the stack  
+        #         # before traversing the node's left subtree 
+        #         stack.append(current) 
             
-                current = current.left  
+        #         current = current.left  
     
-            # BackTrack from the empty subtree and visit the Node 
-            # at the top of the stack; however, if the stack is  
-            # empty you are done 
+        #     # BackTrack from the empty subtree and visit the Node 
+        #     # at the top of the stack; however, if the stack is  
+        #     # empty you are done 
 
-            elif(stack): 
-                current = stack.pop() 
-                fn(current.value)
+        #     elif(stack): 
+        #         current = stack.pop() 
+        #         fn(current.value)
             
-                # We have visited the node and its left  
-                # subtree. Now, it's right subtree's turn 
-                current = current.right  
+        #         # We have visited the node and its left  
+        #         # subtree. Now, it's right subtree's turn 
+        #         current = current.right  
     
-            else: 
-                break
+        #     else: 
+        #         break
 
+
+
+    # --------------------------------------------------------
+
+    # Breadth - first
+    def breadth_for_each(self, fn):
+        queue = deque()
+
+        # add the root node
+        queue.append(self)
+
+        # loop so long as the stack still has elements 
+        while len(queue) > 0:
+            current = queue.popleft()
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+
+            fn(current.value)
 
     # Part 2 -----------------------
 
     # Print all the nodes in order from low to high
     # Hint:  Use a recursive, depth first traversal
     def in_order_print(self, value):
-        pass
+        arr = []
+        value.for_each(lambda x: arr.append(x))
+        arr.sort()
+        for i in arr:
+            print(f"{i}")
+
 
     # Print the node of every node, starting with the given node,
     # in an iterative breadth first traversal
     def bft_print(self, value):
-        pass
+        value.breadth_for_each(lambda x: print(x))
 
     # Print the node of every node, starting with the given node,
     # in an iterative depth first traversal
     def dft_print(self, value):
-        pass
+        value.iter_depth_for_each(lambda x: print(x))
+        
 
     # Stretch Goals -------------------------
     # Note: Research may be required
@@ -160,3 +193,15 @@ class BSTNode:
     # Print Post-order recursive DFT
     def post_order_dft(self, node):
         pass
+
+
+
+# bst = BSTNode(5)
+# bst.insert(8)
+# bst.insert(9)
+# bst.insert(3)
+# bst.insert(6)
+# bst.insert(4)
+# bst.insert(1)
+
+# bst.dft_print(bst)
